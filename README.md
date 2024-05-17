@@ -1,3 +1,3 @@
 # Calculadora
 
-Logica simples para realizar calculo entre duas representações
+Logica simples para realizar operações entre duas representações
