@@ -1,30 +1,44 @@
-class calc:
-    def __init__(self, num1, op, num2):
-        self.num1 = num1
-        self.op = op
-        self.num2 = num2
-        
+import ast
+import operator as op
+
+operators = {
+    ast.Add: op.add,
+    ast.Sub: op.sub,
+    ast.Mult: op.mul,
+    ast.Div: op.truediv,
+    ast.Pow: op.pow,
+    ast.BitXor: op.xor,
+}
+
+class Calc:
+    def __init__(self, expression):
+        self.expression = expression
+
+    def eval_expr(self, expr):
+        try:
+
+            node = ast.parse(expr, mode='eval').body
+            return self._eval(node)
+        except Exception as e:
+            print(f"Erro: {e}")
+            return None
+
+    def _eval(self, node):
+        if isinstance(node, ast.BinOp):
+            left = self._eval(node.left)
+            right = self._eval(node.right)
+            operator_func = operators[type(node.op)]
+            return operator_func(left, right)
+        elif isinstance(node, ast.Num):
+            return node.n
+        else:
+            raise TypeError(node)
 
     def resultado(self):
-        if self.op == 1:
-            result = self.num1 + self.num2
-        elif self.op == 2:
-            result = self.num1 - self.num2
-        elif self.op == 3:
-            result = self.num1 * self.num2
-        elif self.op == 4:
-            result = self.num1 / self.num2
-        print(f"Resultado: {result}")
+        result = self.eval_expr(self.expression)
+        if result is not None:
+            print(f"Resultado: {result}")
 
-
-conta = calc(float(input()),str(input()), float(input()))
-if conta.op == '+':
-    conta.op=1
-elif conta.op == '-':
-    conta.op=2
-elif conta.op == '*':
-    conta.op=3
-elif conta.op == '/':
-    conta.op=4
-
+expression = input("Digite a expressão matemática: ")
+conta = Calc(expression)
 conta.resultado()
