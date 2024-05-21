@@ -20,7 +20,7 @@ class Calc:
             node = ast.parse(expr, mode='eval').body
             return self._eval(node)
         except Exception as e:
-            return f"Erro: {e}"
+            return f"Erro: Caractere não suportado"
 
     def _eval(self, node):
         if isinstance(node, ast.BinOp):
@@ -36,23 +36,42 @@ class Calc:
     def resultado(self):
         return self.eval_expr(self.expression)
 
-def on_button_click():
+def on_enter_key(event=None):
     expression = entry.get()
     calc = Calc(expression)
     result = calc.resultado()
     result_label.config(text=f"Resultado: {result}")
 
+
+def show_placeholder(event, entry, placeholder):
+    if entry.get() == '':
+        entry.insert(0, placeholder)
+        entry.config(fg='grey')
+
+def hide_placeholder(event, entry, placeholder):
+    if entry.get() == placeholder:
+        entry.delete(0, tk.END)
+        entry.config(fg='black')
+
+#janela
 root = tk.Tk()
-root.title("Calculadora de Expressões")
+root.title("Calculadora")
+root.configure(bg='white')
+root.geometry('300x80')
+root.resizable(False,False)
 
-entry = tk.Entry(root, width=40)
-entry.pack(pady=10)
+#input
+placeholder_text= "Insira a operação"
+entry = tk.Entry(root,fg='gray',  width=40, highlightthickness=0, bd=0)
+entry.pack(padx=10)
+entry.insert(0, placeholder_text)
+entry.bind('<FocusIn>', lambda event: hide_placeholder(event, entry, placeholder_text))
+entry.bind('<FocusOut>', lambda event: show_placeholder(event, entry, placeholder_text))
+entry.bind('<Return>', on_enter_key)
 
-button = tk.Button(root, text="Calcular", command=on_button_click)
-button.pack(pady=10)
-
-result_label = tk.Label(root, text="Resultado: ")
-result_label.pack(pady=10)
+result_label = tk.Label(root, text='Resultado: ')
+result_label.pack(pady=20)
+result_label.configure(bg='white')
 
 root.mainloop()
 
